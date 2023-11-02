@@ -32,7 +32,7 @@ func run() error {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.SysProcAttr = &syscall.SysProcAttr{
-		Cloneflags: syscall.CLONE_NEWUTS,
+		Cloneflags: syscall.CLONE_NEWUTS | syscall.CLONE_NEWPID | syscall.CLONE_NEWNS,
 	}
 
 	return cmd.Run()
@@ -40,6 +40,12 @@ func run() error {
 
 func child() error {
 	syscall.Sethostname([]byte("devfest"))
+	if err := syscall.Chdir("/"); err != nil {
+		return err
+	}
+	if err := syscall.Mount("proc", "proc", "proc", 0, ""); err != nil {
+		return err
+	}
 
 	cmd := exec.Command(os.Args[2], os.Args[3:]...)
 	cmd.Stdin = os.Stdin
