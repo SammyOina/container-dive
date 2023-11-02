@@ -39,8 +39,10 @@ func run() error {
 }
 
 func child() error {
-	syscall.Sethostname([]byte("devfest"))
-	if err := syscall.Chdir("/"); err != nil {
+	if err := syscall.Sethostname([]byte("devfest")); err != nil {
+		return err
+	}
+	if err := os.Chdir("/"); err != nil {
 		return err
 	}
 	if err := syscall.Mount("proc", "proc", "proc", 0, ""); err != nil {
@@ -52,5 +54,9 @@ func child() error {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
-	return cmd.Run()
+	if err := cmd.Run(); err != nil {
+		return err
+	}
+
+	return syscall.Unmount("proc", 0)
 }

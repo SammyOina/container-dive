@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log/slog"
 	"os"
 	"os/exec"
@@ -26,7 +25,6 @@ func main() {
 }
 
 func run() error {
-	fmt.Println(os.Args[2], os.Args[3:])
 	cmd := exec.Command("/proc/self/exe", append([]string{"child"}, os.Args[2:]...)...)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
